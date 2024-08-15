@@ -1,0 +1,320 @@
+DROP TABLE cliente CASCADE CONSTRAINTS;
+DROP TABLE TIPO_CLIENTE CASCADE CONSTRAINTS;
+DROP TABLE GENERO CASCADE CONSTRAINTS;
+DROP TABLE ENDERECO_CLIENTE CASCADE CONSTRAINTS;
+DROP TABLE BAIRRO CASCADE CONSTRAINTS;
+DROP TABLE cidade CASCADE CONSTRAINTS;
+DROP TABLE estado CASCADE CONSTRAINTS;
+DROP TABLE pais CASCADE CONSTRAINTS;
+
+
+------------------------------------------------------------------------------------------------------------------------
+
+CREATE TABLE CLIENTE (
+       ID_CLIENTE           NUMBER(10) NOT NULL,
+       NOM_CLIENTE          VARCHAR2(50) NULL,
+       DES_RAZAO_SOCIAL     VARCHAR2(80) NULL,
+       TIP_PESSOA           CHAR(1) NULL,
+       NUM_CPF_CNPJ         NUMBER(15) NULL,
+       DAT_CADASTRO         DATE NULL,
+       DAT_CANCELAMENTO     DATE NULL,
+       ID_GENERO            NUMBER (10) NULL,
+       ID_ENDERECO_CLIENTE  NUMBER(10) NULL,
+       ID_TIPO_CLIENTE      NUMBER (10)  NULL,
+       STA_ATIVO            CHAR(1) NULL
+);
+
+CREATE UNIQUE INDEX XPKCLIENTE ON CLIENTE
+(
+       ID_CLIENTE                    ASC
+);
+
+
+ALTER TABLE CLIENTE
+       ADD CONSTRAINT XPKCLIENTE PRIMARY KEY (ID_CLIENTE);
+       
+------------------------------------------------------------------------------------------------------------------------
+
+CREATE TABLE TIPO_CLIENTE (
+    ID_TIPO_CLIENTE     NUMBER (10) NOT NULL,
+    DESCRICAO           VARCHAR2 (100) NULL
+);
+
+CREATE UNIQUE INDEX XPKTIPOCLIENTE ON TIPO_CLIENTE
+(
+       ID_TIPO_CLIENTE                    ASC
+);       
+
+ALTER TABLE TIPO_CLIENTE
+       ADD CONSTRAINT XPKTIPOCLIENTE PRIMARY KEY (ID_TIPO_CLIENTE);
+
+------------------------------------------------------------------------------------------------------------------------
+
+CREATE TABLE GENERO (
+    ID_GENERO       NUMBER (10) NOT NULL,
+    DESCRICAO       VARCHAR2 (100) NULL    
+);
+
+CREATE UNIQUE INDEX XPKGENERO ON GENERO
+(
+       ID_GENERO                    ASC
+);
+
+ALTER TABLE CLIENTE
+       ADD CONSTRAINT XPKGENERO PRIMARY KEY (ID_GENERO);
+       
+------------------------------------------------------------------------------------------------------------------------
+
+
+CREATE TABLE ENDERECO_CLIENTE (
+       ID_ENDERECO_CLIENTE  NUMBER(10) NOT NULL,
+       ID_CLIENTE           NUMBER(10) NULL,
+       DES_ENDERECO         VARCHAR2(80) NULL,
+       NUM_ENDERECO         VARCHAR2(10) NULL,
+       DES_COMPLEMENTO      VARCHAR2(20) NULL,
+       NUM_CEP              NUMBER(9) NULL,
+       ID_BAIRRO            VARCHAR2(50) NULL,
+       STA_ATIVO            CHAR(1) NULL,
+       DAT_CADASTRO         DATE NULL,
+       DAT_CANCELAMENTO     VARCHAR2(20) NULL
+);
+
+CREATE UNIQUE INDEX XPKENDERECO_CLIENTE ON ENDERECO_CLIENTE
+(
+       ID_ENDERECO_CLIENTE           ASC
+);
+
+CREATE INDEX XIF1ENDERECO_CLIENTE ON ENDERECO_CLIENTE
+(
+       IDD_CLIENTE                    ASC
+);
+
+CREATE INDEX XIF3ENDERECO_CLIENTE ON ENDERECO_CLIENTE
+(
+       ID_CIDADE                     ASC
+);
+
+
+ALTER TABLE ENDERECO_CLIENTE
+       ADD CONSTRAINT XPKENDERECO_CLIENTE PRIMARY KEY (
+              ID_ENDERECO_CLIENTE);
+
+------------------------------------------------------------------------------------------------------------------------
+
+CREATE TABLE BAIRRO (
+       ID_BAIRRO          NUMBER(6) NOT NULL,
+       NOM_BAIRRO         VARCHAR2(20) NULL,
+       ID_CIDADE           NUMBER(6)  NULL
+);
+
+CREATE UNIQUE INDEX XPKcidade ON cidade
+(
+       ID_BAIRRO                     ASC
+);
+
+
+ALTER TABLE cidade
+       ADD CONSTRAINT XPKcidade PRIMARY KEY (ID_BAIRRO);
+
+
+
+------------------------------------------------------------------------------------------------------------------------
+
+CREATE TABLE cidade (
+       ID_CIDADE           NUMBER(6) NOT NULL,
+       NOM_CIDADE          VARCHAR2(20) NULL,
+       ID_ESTADO           CHAR(3) NULL
+);
+
+CREATE UNIQUE INDEX XPKcidade ON cidade
+(
+       ID_CIDADE                     ASC
+);
+
+
+ALTER TABLE cidade
+       ADD CONSTRAINT XPKcidade PRIMARY KEY (ID_CIDADE);
+
+
+
+------------------------------------------------------------------------------------------------------------------------
+
+CREATE TABLE estado (
+       ID_ESTADO           CHAR(3) NOT NULL,
+       NOM_ESTADO          VARCHAR2(50) NULL,
+       ID_PAIS             NUMBER(3) NULL
+);
+
+CREATE UNIQUE INDEX XPKestado ON estado
+(
+       ID_ESTADO                     ASC
+);
+
+CREATE INDEX XIF1estado ON estado
+(
+       ID_PAIS                       ASC
+);
+
+
+ALTER TABLE estado
+       ADD CONSTRAINT XPKestado PRIMARY KEY (ID_ESTADO);
+
+
+
+------------------------------------------------------------------------------------------------------------------------
+
+CREATE TABLE pais (
+       ID_PAIS             NUMBER(3) NOT NULL,
+       NOM_PAIS            VARCHAR2(50) NULL
+);
+
+CREATE UNIQUE INDEX XPKpais ON pais
+(
+       ID_PAIS                       ASC
+);
+
+
+ALTER TABLE pais
+       ADD CONSTRAINT XPKpais PRIMARY KEY (ID_PAIS);
+
+
+------------------------------------------------------------------------------------------------------------------------
+
+ALTER TABLE movimento_estoque
+       ADD CONSTRAINT R_24
+              FOREIGN KEY (COD_TIPO_MOVIMENTO_ESTOQUE)
+                             REFERENCES tipo_movimento_estoque  (
+              COD_TIPO_MOVIMENTO_ESTOQUE);
+
+
+ALTER TABLE CLIENTE
+       ADD CONSTRAINT R_1
+              FOREIGN KEY (ID_GENERO)
+                             REFERENCES GENERO  (
+              ID_GENERO);
+              
+
+ALTER TABLE CLIENTE
+       ADD CONSTRAINT R_2
+              FOREIGN KEY (ID_ENDERECO_CLIENTE)
+                             REFERENCES ENDERECO_CLIENTE  (
+              ID_ENDERECO_CLIENTE);              
+
+ALTER TABLE CLIENTE
+       ADD CONSTRAINT R_3
+              FOREIGN KEY (ID_TIPO_CLIENTE)
+                             REFERENCES TIPO_CLIENTE  (
+              ID_TIPO_CLIENTE);   
+              
+
+ALTER TABLE ENDERECO_CLIENTE
+       ADD CONSTRAINT R_4
+              FOREIGN KEY (ID_BAIRRO)
+                             REFERENCES BAIRRO  (
+              ID_BAIRRO);  
+
+
+ALTER TABLE BAIRRO
+       ADD CONSTRAINT R_5
+              FOREIGN KEY (ID_CIDADE)
+                             REFERENCES cidade  (
+              ID_CIDADE); 
+              
+
+ALTER TABLE CIDADE
+       ADD CONSTRAINT R_6
+              FOREIGN KEY (ID_ESTADO)
+                             REFERENCES ESTADO  (
+              ID_ESTADO);  
+              
+
+ALTER TABLE ESTADO
+       ADD CONSTRAINT R_6
+              FOREIGN KEY (ID_PAIS)
+                             REFERENCES PAIS  (
+              ID_PAIS);  
+
+------------------------------------------------------------------------------------------------------------------------
+--INSERSÕES:
+
+-- Inserções na tabela ENDERECO_CLIENTE
+INSERT INTO ENDERECO_CLIENTE (ID_ENDERECO_CLIENTE, ID_CLIENTE, DES_ENDERECO, NUM_ENDERECO, DES_COMPLEMENTO, NUM_CEP, ID_BAIRRO, STA_ATIVO, DAT_CADASTRO) 
+VALUES (1, 1, 'Rua A', '123', NULL, 12345000, 1, 'S', SYSDATE);
+INSERT INTO ENDERECO_CLIENTE (ID_ENDERECO_CLIENTE, ID_CLIENTE, DES_ENDERECO, NUM_ENDERECO, DES_COMPLEMENTO, NUM_CEP, ID_BAIRRO, STA_ATIVO, DAT_CADASTRO) 
+VALUES (2, 2, 'Rua B', '456', 'Apt 10', 23456000, 2, 'S', SYSDATE);
+INSERT INTO ENDERECO_CLIENTE (ID_ENDERECO_CLIENTE, ID_CLIENTE, DES_ENDERECO, NUM_ENDERECO, DES_COMPLEMENTO, NUM_CEP, ID_BAIRRO, STA_ATIVO, DAT_CADASTRO) 
+VALUES (3, 3, 'Rua C', '789', NULL, 34567000, 3, 'S', SYSDATE);
+INSERT INTO ENDERECO_CLIENTE (ID_ENDERECO_CLIENTE, ID_CLIENTE, DES_ENDERECO, NUM_ENDERECO, DES_COMPLEMENTO, NUM_CEP, ID_BAIRRO, STA_ATIVO, DAT_CADASTRO) 
+VALUES (4, 4, 'Rua D', '101', 'Casa 2', 45678000, 4, 'S', SYSDATE);
+INSERT INTO ENDERECO_CLIENTE (ID_ENDERECO_CLIENTE, ID_CLIENTE, DES_ENDERECO, NUM_ENDERECO, DES_COMPLEMENTO, NUM_CEP, ID_BAIRRO, STA_ATIVO, DAT_CADASTRO) 
+VALUES (5, 5, 'Rua E', '202', NULL, 56789000, 5, 'S', SYSDATE);
+
+
+-- Inserções na tabela CLIENTE
+INSERT INTO CLIENTE (ID_CLIENTE, NOM_CLIENTE, DES_RAZAO_SOCIAL, TIP_PESSOA, NUM_CPF_CNPJ, DAT_CADASTRO, ID_GENERO, ID_ENDERECO_CLIENTE, ID_TIPO_CLIENTE, STA_ATIVO) 
+VALUES (1, 'João da Silva', NULL, 'F', 12345678901, SYSDATE, 1, 1, 1, 'S');
+INSERT INTO CLIENTE (ID_CLIENTE, NOM_CLIENTE, DES_RAZAO_SOCIAL, TIP_PESSOA, NUM_CPF_CNPJ, DAT_CADASTRO, ID_GENERO, ID_ENDERECO_CLIENTE, ID_TIPO_CLIENTE, STA_ATIVO) 
+VALUES (2, 'Maria Oliveira', NULL, 'F', 23456789012, SYSDATE, 2, 2, 1, 'S');
+INSERT INTO CLIENTE (ID_CLIENTE, NOM_CLIENTE, DES_RAZAO_SOCIAL, TIP_PESSOA, NUM_CPF_CNPJ, DAT_CADASTRO, ID_GENERO, ID_ENDERECO_CLIENTE, ID_TIPO_CLIENTE, STA_ATIVO) 
+VALUES (3, 'Carlos Souza', NULL, 'F', 34567890123, SYSDATE, 1, 3, 2, 'S');
+INSERT INTO CLIENTE (ID_CLIENTE, NOM_CLIENTE, DES_RAZAO_SOCIAL, TIP_PESSOA, NUM_CPF_CNPJ, DAT_CADASTRO, ID_GENERO, ID_ENDERECO_CLIENTE, ID_TIPO_CLIENTE, STA_ATIVO) 
+VALUES (4, 'Ana Lima', NULL, 'F', 45678901234, SYSDATE, 2, 4, 3, 'S');
+INSERT INTO CLIENTE (ID_CLIENTE, NOM_CLIENTE, DES_RAZAO_SOCIAL, TIP_PESSOA, NUM_CPF_CNPJ, DAT_CADASTRO, ID_GENERO, ID_ENDERECO_CLIENTE, ID_TIPO_CLIENTE, STA_ATIVO) 
+VALUES (5, 'Pedro Santos', NULL, 'F', 56789012345, SYSDATE, 1, 5, 2, 'S');
+
+-- Inserções na tabela PAIS
+INSERT INTO PAIS (ID_PAIS, NOM_PAIS) VALUES (1, 'Brasil');
+INSERT INTO PAIS (ID_PAIS, NOM_PAIS) VALUES (2, 'Argentina');
+INSERT INTO PAIS (ID_PAIS, NOM_PAIS) VALUES (3, 'Estados Unidos');
+INSERT INTO PAIS (ID_PAIS, NOM_PAIS) VALUES (4, 'Canadá');
+INSERT INTO PAIS (ID_PAIS, NOM_PAIS) VALUES (5, 'México');
+
+-- Inserções na tabela TIPO_CLIENTE
+INSERT INTO TIPO_CLIENTE (ID_TIPO_CLIENTE, DESCRICAO) VALUES (1, 'Individual');
+INSERT INTO TIPO_CLIENTE (ID_TIPO_CLIENTE, DESCRICAO) VALUES (2, 'Empresa');
+INSERT INTO TIPO_CLIENTE (ID_TIPO_CLIENTE, DESCRICAO) VALUES (3, 'VIP');
+INSERT INTO TIPO_CLIENTE (ID_TIPO_CLIENTE, DESCRICAO) VALUES (4, 'Fornecedor');
+INSERT INTO TIPO_CLIENTE (ID_TIPO_CLIENTE, DESCRICAO) VALUES (5, 'Outro');
+
+-- Inserções na tabela GENERO
+INSERT INTO GENERO (ID_GENERO, DESCRICAO) VALUES (1, 'Masculino');
+INSERT INTO GENERO (ID_GENERO, DESCRICAO) VALUES (2, 'Feminino');
+INSERT INTO GENERO (ID_GENERO, DESCRICAO) VALUES (3, 'Não Binário');
+INSERT INTO GENERO (ID_GENERO, DESCRICAO) VALUES (4, 'Outro');
+INSERT INTO GENERO (ID_GENERO, DESCRICAO) VALUES (5, 'Prefiro não dizer');
+
+-- Inserções na tabela BAIRRO
+INSERT INTO BAIRRO (ID_BAIRRO, NOM_BAIRRO, ID_CIDADE) VALUES (1, 'Centro', 1);
+INSERT INTO BAIRRO (ID_BAIRRO, NOM_BAIRRO, ID_CIDADE) VALUES (2, 'Zona Sul', 2);
+INSERT INTO BAIRRO (ID_BAIRRO, NOM_BAIRRO, ID_CIDADE) VALUES (3, 'Barra', 3);
+INSERT INTO BAIRRO (ID_BAIRRO, NOM_BAIRRO, ID_CIDADE) VALUES (4, 'Savassi', 4);
+INSERT INTO BAIRRO (ID_BAIRRO, NOM_BAIRRO, ID_CIDADE) VALUES (5, 'Moinhos de Vento', 5);
+
+-- Inserções na tabela CIDADE
+INSERT INTO CIDADE (ID_CIDADE, NOM_CIDADE, ID_ESTADO) VALUES (1, 'São Paulo', 'SP');
+INSERT INTO CIDADE (ID_CIDADE, NOM_CIDADE, ID_ESTADO) VALUES (2, 'Rio de Janeiro', 'RJ');
+INSERT INTO CIDADE (ID_CIDADE, NOM_CIDADE, ID_ESTADO) VALUES (3, 'Salvador', 'BA');
+INSERT INTO CIDADE (ID_CIDADE, NOM_CIDADE, ID_ESTADO) VALUES (4, 'Belo Horizonte', 'MG');
+INSERT INTO CIDADE (ID_CIDADE, NOM_CIDADE, ID_ESTADO) VALUES (5, 'Porto Alegre', 'RS');
+
+-- Inserções na tabela ESTADO
+INSERT INTO ESTADO (ID_ESTADO, NOM_ESTADO, ID_PAIS) VALUES ('SP', 'São Paulo', 1);
+INSERT INTO ESTADO (ID_ESTADO, NOM_ESTADO, ID_PAIS) VALUES ('RJ', 'Rio de Janeiro', 1);
+INSERT INTO ESTADO (ID_ESTADO, NOM_ESTADO, ID_PAIS) VALUES ('BA', 'Bahia', 1);
+INSERT INTO ESTADO (ID_ESTADO, NOM_ESTADO, ID_PAIS) VALUES ('MG', 'Minas Gerais', 1);
+INSERT INTO ESTADO (ID_ESTADO, NOM_ESTADO, ID_PAIS) VALUES ('RS', 'Rio Grande do Sul', 1);
+
+
+
+
+
+
+
+
+
+
+
+
+------------------------------------------------------------------------------------------------------------------------
+
+
